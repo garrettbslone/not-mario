@@ -1,14 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
     private Rigidbody _rigidbody;
+    private Camera _camera;
+    private TMP_Text coinsText;
+    private int coins = 0;
+    
     // Start is called before the first frame update
     void Start()
     {
         _rigidbody = GetComponent<Rigidbody>();
+        _camera = Camera.main;
+        coinsText = GameObject.Find("Coins").GetComponent<TMP_Text>();
     }
 
     // Update is called once per frame
@@ -16,7 +23,7 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Ray pos = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray pos = _camera.ScreenPointToRay(Input.mousePosition);
             
             RaycastHit hit;
             if (Physics.Raycast(pos, out hit))
@@ -24,9 +31,10 @@ public class PlayerController : MonoBehaviour
                 Debug.DrawRay(pos.origin, pos.direction * 100, Color.yellow);
                 Debug.Log($"Hit: {hit.collider.gameObject.name}");
 
-                if (hit.collider.gameObject)
+                if (hit.collider.gameObject && hit.collider.gameObject.CompareTag("QuestionBlock"))
                 {
                     GameObject.Destroy(hit.collider.gameObject);
+                    coinsText.text = $"{++coins:00}";
                 }
             }
             else
