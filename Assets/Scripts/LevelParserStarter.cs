@@ -15,6 +15,8 @@ public class LevelParserStarter : MonoBehaviour
 
     public GameObject Stone;
 
+    public GameObject Player;
+
     public Transform parentTransform;
     // Start is called before the first frame update
     void Start()
@@ -57,6 +59,9 @@ public class LevelParserStarter : MonoBehaviour
             row++;
             lines.Pop();
         }
+
+        var player = GameObject.Instantiate(Player, parentTransform);
+        player.transform.position = new Vector3(4, 4, 0);
     }
 
     private void SpawnPrefab(char spot, Vector3 positionToSpawn)
@@ -68,25 +73,25 @@ public class LevelParserStarter : MonoBehaviour
             case 'b':
             {
                 ToSpawn = Brick;
-                Debug.Log("Spawn Brick");
+                // Debug.Log("Spawn Brick");
                 break;
             }
             case '?':
             {
                 ToSpawn = QuestionBox;
-                Debug.Log("Spawn QuestionBox"); 
+                // Debug.Log("Spawn QuestionBox"); 
                 break;
             }
             case 'x':
             {
-                ToSpawn = Stone;
-                Debug.Log("Spawn Stone");
+                ToSpawn = Rock;
+                // Debug.Log("Spawn Rock");
                 break;
             }
             case 's':
             {
-                ToSpawn = Rock;
-                Debug.Log("Spawn Rock");
+                ToSpawn = Stone;
+                // Debug.Log("Spawn Stone");
                 break;
             }
             default: return;
