@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7469988920570091587}
   m_Layer: 0
   m_Name: Brick
-  m_TagString: Untagged
+  m_TagString: Brick
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -62,7 +62,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5906291d4abc3f142a1aec0c7d70377b, type: 2}
+  - {fileID: 2100000, guid: ae80f6d837ca3d844a61b6b778f75296, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -91,7 +91,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5210242870309630359}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: eca460d2959fea949aa89f82bde7c06b, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2

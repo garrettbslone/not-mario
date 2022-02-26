@@ -1,73 +1,102 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Timers;
 using TMPro;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public float jumpForce = 10f, runForce = 10f, turboForce = 15f, maxRunSpeed = 100f;
+
+    private Animator _animator;
+    private float _height;
     private Rigidbody _rigidbody;
     private Camera _camera;
-    private TMP_Text coinsText;
-    private int coins = 0;
+    private TMP_Text _coinsText, _timeText;
+    private int _coins = 0;
+    private bool _jumpQueued = false, _isJumping = false;
+    private float _timeAfterJump = 0;
+
+    private const float TIME_WAIT_AFTER_JUMP = 0.25f;
     
     // Start is called before the first frame update
     void Start()
     {
+        _animator = GetComponent<Animator>();
+        _height = GetComponent<Collider>().bounds.extents.y;
         _rigidbody = GetComponent<Rigidbody>();
         _camera = Camera.main;
-        coinsText = GameObject.Find("Coins").GetComponent<TMP_Text>();
+        _coinsText = GameObject.Find("Coins").GetComponent<TMP_Text>();
+        _timeText = GameObject.Find("Time").GetComponent<TMP_Text>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (_timeAfterJump > 0)
         {
-            Ray pos = _camera.ScreenPointToRay(Input.mousePosition);
-            
-            RaycastHit hit;
-            if (Physics.Raycast(pos, out hit))
-            {
-                Debug.DrawRay(pos.origin, pos.direction * 100, Color.yellow);
-                Debug.Log($"Hit: {hit.collider.gameObject.name}");
+            _timeAfterJump -= Mathf.Max(Time.deltaTime, 0f);
+        }
 
-                if (hit.collider.gameObject && hit.collider.gameObject.CompareTag("QuestionBlock"))
+        if (_isJumping)
+        {
+            if (_timeAfterJump <= 0 &&
+                Physics.Raycast(transform.position, Vector3.down, _height + 0.01f))
+            {
+                _isJumping = false;
+            } 
+            else if (Physics.Raycast(transform.position, Vector3.up, out RaycastHit hit,_height + 1f))
+            {
+                if (hit.collider.gameObject && hit.collider.gameObject.CompareTag("Brick"))
                 {
                     GameObject.Destroy(hit.collider.gameObject);
-                    coinsText.text = $"{++coins:00}";
+                    _coinsText.text = $"{++_coins:00}";
                 }
-            }
-            else
-            {
-                Debug.DrawRay(pos.origin, pos.direction * 100, Color.white);
-                Debug.Log("Did not Hit");
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.A))
+        float axis = Input.GetAxis("Horizontal");
+        _rigidbody.AddForce(Vector3.right * axis * runForce, ForceMode.Force);
+        
+        if (Input.GetKeyDown(KeyCode.Space) || _jumpQueued)
         {
-            // _rigidbody.velocity = Vector3.left;
-            transform.position += Vector3.left;
-        } 
-        else if (Input.GetKeyDown(KeyCode.D))
-        {
-            // _rigidbody.velocity = Vector3.right;
-            transform.position += Vector3.right;
+            if (!_isJumping)
+            {
+                _rigidbody.AddForce(Vector3.up * (_jumpQueued ? jumpForce * 1.2f : jumpForce), ForceMode.Impulse);
+                _timeAfterJump = TIME_WAIT_AFTER_JUMP;
+                _isJumping = true;
+                _jumpQueued = false;
+            } else if (!_jumpQueued)
+            {
+                _jumpQueued = true;
+            }
         }
-        else if (Input.GetKeyDown(KeyCode.W))
+
+        if (Mathf.Abs(_rigidbody.velocity.x) > maxRunSpeed)
         {
-            // _rigidbody.velocity = Vector3.up;
-            transform.position += Vector3.up;
+            float x = maxRunSpeed * Mathf.Sign(_rigidbody.velocity.x);
+            _rigidbody.velocity = new Vector3(x, _rigidbody.velocity.y, 0f);
         }
-        else if (Input.GetKeyDown(KeyCode.S))
+
+        if (Mathf.Abs(axis) < 0.1f)
         {
-            // _rigidbody.velocity = Vector3.up;
-            transform.position += Vector3.down;
+            float x = _rigidbody.velocity.x * (1f - Time.deltaTime * 5f);
+            _rigidbody.velocity = new Vector3(x, _rigidbody.velocity.y, 0f);
         }
-        // else
-        // {
-        //     _rigidbody.velocity = Vector3.zero;
-        // }
+        
+        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
+        {
+            _animator.SetBool("Running", true);
+        }
+        else if (Input.GetKeyUp(KeyCode.LeftShift) ||
+                 Input.GetKeyUp(KeyCode.RightShift) ||
+                 _rigidbody.velocity.magnitude < 0.1f)
+        {
+            _animator.SetBool("Running", false);
+        }
+        
+        _animator.SetFloat("Speed", _rigidbody.velocity.magnitude);
     }
     
 }

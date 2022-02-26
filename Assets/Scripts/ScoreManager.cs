@@ -25,6 +25,11 @@ public class ScoreManager : MonoBehaviour
         {
             timeElapsed = 0f;
             timeText.text = $"Time\n{--levelTime}";
+
+            if (levelTime == 0)
+            {
+                Debug.Log("Player failed!");
+            }
         }
     }
 }
