@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ScoreManager : MonoBehaviour
 {
@@ -29,6 +30,7 @@ public class ScoreManager : MonoBehaviour
             if (levelTime == 0)
             {
                 Debug.Log("Player failed!");
+                SceneManager.LoadScene("LevelParser");
             }
         }
     }

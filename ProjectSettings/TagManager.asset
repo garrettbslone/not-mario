@@ -6,6 +6,7 @@ TagManager:
   tags:
   - QuestionBlock
   - Brick
+  - Water
   layers:
   - Default
   - TransparentFX
